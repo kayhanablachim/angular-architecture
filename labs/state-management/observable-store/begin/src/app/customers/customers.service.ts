@@ -10,21 +10,22 @@ import { StoreState } from '../shared/interfaces';
 @Injectable({
     providedIn: 'root'
 })
-export class CustomersService {
+export class CustomersService extends ObservableStore<StoreState> {
 
     apiUrl = 'api/customers';
 
-    constructor(private http: HttpClient) { 
-        
+    constructor(private http: HttpClient) {
+      super({ trackStateHistory: true });
     }
 
     private fetchCustomers() {
         return this.http.get<Customer[]>(this.apiUrl)
             .pipe(
                 map(customers => {
-                    
+
                     // Set the Store State Here
-                    
+                    this.setState({ customers },
+                      CustomersStoreActions.GetCustomers);
 
                     return customers;
                 }),
@@ -34,13 +35,13 @@ export class CustomersService {
 
     getAll() {
         // Get Store State Here
-        
+        const state = this.getState();
 
         // pull from store cache
         if (state && state.customers) {
 
             // Log Store State Here
-
+            console.log(this.stateHistory);
 
             return of(state.customers);
         }
@@ -58,7 +59,7 @@ export class CustomersService {
             .pipe(
                 map(custs => {
                     let filteredCusts = custs.filter(cust => cust.id === id);
-                    const customer = (filteredCusts && filteredCusts.length) ? filteredCusts[0] : null;                
+                    const customer = (filteredCusts && filteredCusts.length) ? filteredCusts[0] : null;
                     this.setState({ customer }, CustomersStoreActions.GetCustomer);
                     return customer;
                 }),
@@ -71,7 +72,7 @@ export class CustomersService {
             .pipe(
                 switchMap(cust => {
                     // update local store with added customer data
-                    // not required of course unless the store cache is needed 
+                    // not required of course unless the store cache is needed
                     // (it is for the customer list component in this example)
                     return this.fetchCustomers();
                 }),
@@ -84,7 +85,7 @@ export class CustomersService {
             .pipe(
                 switchMap(cust => {
                     // update local store with updated customer data
-                    // not required of course unless the store cache is needed 
+                    // not required of course unless the store cache is needed
                     // (it is for the customer list component in this example)
                     return this.fetchCustomers();
                 }),
@@ -97,7 +98,7 @@ export class CustomersService {
             .pipe(
                 switchMap(() => {
                     // update local store since customer deleted
-                    // not required of course unless the store cache is needed 
+                    // not required of course unless the store cache is needed
                     // (it is for the customer list component in this example)
                     return this.fetchCustomers();
                 }),

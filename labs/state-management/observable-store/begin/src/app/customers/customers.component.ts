@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Customer } from '../core/model/customer';
 import { Observable } from 'rxjs';
+import { CustomersService } from './customers.service';
 
 
 @Component({
@@ -10,12 +11,16 @@ import { Observable } from 'rxjs';
 })
 export class CustomersComponent implements OnInit {
     title = 'Customers';
+    customers$: Observable<Customer[]>;
 
-
-    constructor() {}
+    constructor(private readonly customersService: CustomersService) {}
 
     ngOnInit() {
-
+      this.getCustomers();
     }
+
+    getCustomers() {
+      this.customers$ = this.customersService.getAll();
+  }
 
 }
