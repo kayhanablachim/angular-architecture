@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'heroes' },
@@ -11,6 +12,7 @@ export const routes: Routes = [
   {
     // Note that this is the Angular 8+ way to lazy load routes
     path: 'villains',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./villains/villains.module').then((m) => m.VillainsModule),
 
