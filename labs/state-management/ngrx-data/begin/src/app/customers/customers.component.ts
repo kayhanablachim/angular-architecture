@@ -11,14 +11,18 @@ import { CustomersService } from './customers.service';
 })
 export class CustomersComponent implements OnInit {
     title = 'Customers';
+    customers$: Observable<Customer[]>;
+    loading$: Observable<boolean>;
 
-
-    constructor() {
-
+    constructor(private customersService: CustomersService) {
+      this.loading$ = this.customersService.loading$;
     }
 
     ngOnInit() {
-
+      this.getCustomers();
     }
 
+    getCustomers() {
+      this.customers$ = this.customersService.getAll();
+  }
 }
